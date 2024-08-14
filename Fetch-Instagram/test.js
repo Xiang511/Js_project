@@ -2,7 +2,8 @@ const puppeteer = require('puppeteer-core');
 
 async function getProfilePicture(username) {
   const browser = await puppeteer.launch({
-    executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe' // 指定 Chrome 瀏覽器的路徑
+    executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe', // 指定 Chrome 瀏覽器的路徑
+    headless: false
   });
   const page = await browser.newPage();
   await page.goto(`https://www.instagram.com/${username}`, { waitUntil: 'networkidle2' });
