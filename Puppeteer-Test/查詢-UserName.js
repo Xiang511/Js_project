@@ -4,7 +4,7 @@ const puppeteer = require('puppeteer-core');
 async function getProfilePicture(username) {
   const browser = await puppeteer.launch({
     executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe', // 指定 Chrome 瀏覽器的路徑
-    headless:false
+    headless:true
   });
   const page = await browser.newPage();
   await page.goto(`https://www.threads.net/${username}`, { waitUntil: 'networkidle2' });

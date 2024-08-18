@@ -2,22 +2,25 @@
 const fs = require('fs');
 const puppeteer = require('puppeteer-core');
 
- let not_found_list = []
+let not_found_list = []
 
 async function getProfilePicture(username) {
   const browser = await puppeteer.launch({
     executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe', // 指定 Chrome 瀏覽器的路徑
-    headless: false,
+    headless: true,
   });
   const page = await browser.newPage();
   await page.goto(`https://www.threads.net/${username}`, { waitUntil: 'networkidle2' });
   
   try {
-    await page.waitForSelector('img[alt*="的大頭貼照"]', { timeout: 6000 });
+    await page.waitForSelector('img[alt*="的大頭貼照"]', { timeout: 1000 });
 
   } catch (error) {
     console.log(`${username} not found`);
-    not_found_list.push(username);
+    
+    not_found_list.push(`${username} not found`);
+   
+    
     await browser.close();
     return null;
   }
@@ -26,17 +29,25 @@ async function getProfilePicture(username) {
   const profilePictureUrl = await profilePictureElement.getProperty('src');
   const profilePictureUrlValue = await profilePictureUrl.jsonValue();
 
+  // 檢查檔案是否已存在
+  const filePath = `profile_pictures/${username}_profile_picture.png`;
+  if (fs.existsSync(filePath)) {
+    console.log(`${username} already exists`);
+    await browser.close();
+    return profilePictureUrlValue;
+  }
+
   // 下載抓取到的圖片
   const viewSource = await page.goto(profilePictureUrlValue);
 
   if (!fs.existsSync('profile_pictures')) {
     fs.mkdirSync('profile_pictures');
   }
-  fs.writeFile(`profile_pictures/${username}_profile_picture.png`, await viewSource.buffer(), function (err) {
+  fs.writeFile(filePath, await viewSource.buffer(), function (err) {
     if (err) {
       return console.log(err);
     }
-    console.log(`${username}e was saved!`);
+    console.log(`${username} was saved!`);
   });
   await browser.close();
 
@@ -46,21 +57,9 @@ async function getProfilePicture(username) {
 async function processUsernames(values) {
   for (const username of values) {
     const profilePictureUrl = await getProfilePicture(username);
-    if (profilePictureUrl) {
-      let unfollowedData = fs.readFileSync('unfollowed.json');
-      let unfollowedValues = JSON.parse(unfollowedData);
-
-      unfollowedValues.push({ username, profilePicture: `profile_pictures/${username}_profile_picture.png` });
-      fs.writeFileSync('unfollowed.json', JSON.stringify(unfollowedValues, null, 2)); // 格式化 JSON 以便於閱讀
-    }
-    else{
-      let unfollowedData = fs.readFileSync('unfollowed.json');
-      let unfollowedValues = JSON.parse(unfollowedData);
-      unfollowedValues.push({ username, profilePicture: 'profile_pictures/default_profile_picture.png' });
-        fs.writeFileSync('unfollowed.json', JSON.stringify(unfollowedValues, null, 2)); // 格式化 JSON 以便於閱讀
     }
   }
-}
+
 const data = fs.readFileSync('filtered_following.json', 'utf8');
 
 // 解析 JSON 資料
@@ -326,14 +325,17 @@ const values = [
   // "cjn_._",
   // "wan_snap",
   // "yin_yu_words",
-  // "m.y.writing",
-  // "dudusuxx",
-  // "__you__are__my__love__",
-  // "cumeizi",
-  // "_____qing_",
-  // "_kai_1021",
-  // "justin_91530"
- 
+  "m.y.writing",
+  "dudusuxx",
+  "__you__are__my__love__",
+  "cumeizi",
+  "_____qing_",
+  "_kai_1021",
+  // "justin_91530",
 ]
 processUsernames(values);
-console.log(not_found_list);
+
+
+
+
+console.log(`總共有 "${values.length}" 筆資料需要查詢`);
