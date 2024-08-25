@@ -1,0 +1,30 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.div1,
+.div2{
+    height: 100vh;
+}
+.div1{
+    background-color: pink;
+}
+.div2{
+    background-color: #fff;
+}
+.square{
+    width: 150px;
+    height: 350px;
+    /* height: 20vh; */
+    background: fuchsia;
+}
+.square2{
+    width: 150px;
+    height: 350px;
+    /* height: 20vh; */
+    background: green;
+}
+.red{
+    background: red;
+}
