@@ -6,3 +6,7 @@
 ```
 https://www.youtube.com/watch?v=WEky7V490Rs&list=PLMPgoZdlPumexxtvuPUB3TY7LExI1N_Xp&index=1
 ```
+### Paroller.js - @tgomilar
+```
+https://tgomilar.github.io/paroller.js/
+```
